@@ -1,7 +1,7 @@
 {
   "name": "@linxin666/dsh-client-ui-community-plugins",
   "description": "API-backed DSH community plugin manager for the Web settings page and conversations: browse, install, update, and remove Store projects with Host-side validation.",
-  "version": "0.1.19",
+  "version": "0.2.10",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
