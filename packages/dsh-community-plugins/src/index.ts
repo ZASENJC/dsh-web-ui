@@ -16,6 +16,7 @@ import z from 'schemastery'
 import { createStoreRoutes, installCatalogProject, listInstalledPlugins, removeInstalledPlugin } from './store-manager.ts'
 import { loadBundledStoreSkill } from './store-skill.ts'
 import { createStoreApprovalGate, createStoreTools } from './store-tools.ts'
+import { registerCompatibleStoreTools } from './tool-compat.ts'
 import type { InstallMode } from './core/store-catalog.ts'
 
 /** Stable cordis plugin name (matches cordis.patch.yml insert id). */
@@ -79,9 +80,9 @@ export function apply(ctx: Context): void {
     logger: ctx.logger,
   })) ctx.webServer.register(route)
 
-  for (const tool of createStoreTools({ fetcher: globalThis.fetch, listInstalled, install, remove })) {
-    ctx.tools.register(tool)
+  const registeredTools = registerCompatibleStoreTools(ctx.tools, createStoreTools({ fetcher: globalThis.fetch, listInstalled, install, remove }))
+  if (registeredTools.some(({ name }) => name === 'store_install' || name === 'store_remove')) {
+    ctx.on('tools/pre-execute', createStoreApprovalGate())
   }
-  ctx.on('tools/pre-execute', createStoreApprovalGate())
   ctx.skills.register(loadBundledStoreSkill())
 }
